@@ -104,6 +104,9 @@ source $ZSH/oh-my-zsh.sh
 # alias zshconfig="mate ~/.zshrc"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
 
+# For now, keeping aliases for both zsh and bash in the same file
+source ~/.bash_aliases
+
 # >>> conda initialize >>>
 # !! Contents within this block are managed by 'conda init' !!
 __conda_setup="$('/home/guilherme/anaconda3/bin/conda' 'shell.zsh' 'hook' 2> /dev/null)"

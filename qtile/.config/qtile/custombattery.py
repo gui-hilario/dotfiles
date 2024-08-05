@@ -560,7 +560,7 @@ class Battery(base.ThreadPoolText):
         if status.state == BatteryState.FULL:
             if self.show_short_text:
                 # return "󰂃 100%"
-                return " 󱐋󱐋󱐋"
+                return " "
             char = self.full_char
         elif status.state == BatteryState.EMPTY or (
             status.state == BatteryState.UNKNOWN and status.percent == 0
@@ -573,15 +573,22 @@ class Battery(base.ThreadPoolText):
         else:
             char = self.unknown_char
 
-        icons = ["", "", "", "", ""]
+        # icons = ["", "", "", "", ""]
+        
+        # icon_count = len(icons)
+        # icon_match = int(status.percent*icon_count)
+        # icon = icons[icon_match]
+
+        if (status.percent < 0.2):
+            icon = ""
+        else:
+            icon = ""
+
         hour = status.time // 3600
         minute = (status.time // 60) % 60
-        
-        icon_count = len(icons)
-        icon_match = int(status.percent*icon_count)
-        icon = icons[icon_match]
+
         if status.state == BatteryState.CHARGING:
-            icon += "󱐋"
+            icon = ""
 
         return self.format.format(
             char=icon, percent=status.percent, watt=status.power, hour=hour, min=minute

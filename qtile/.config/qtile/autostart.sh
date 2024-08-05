@@ -1,3 +1,3 @@
 #!/bin/sh
 
-picom --inactive-opacity 0.75 &
+picom --config ~/.config/picom.conf &

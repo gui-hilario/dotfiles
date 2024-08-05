@@ -1,5 +1,5 @@
 from libqtile import bar, layout, qtile, widget, hook
-from libqtile.config import Click, Drag, Group, Key, Match, Screen
+from libqtile.config import Click, Drag, Group, Key, Match, Screen, ScratchPad, DropDown
 from libqtile.lazy import lazy
 from libqtile.utils import guess_terminal
 
@@ -126,6 +126,13 @@ keys = [
     Key([], "XF86MonBrightnessUp",
         lazy.spawn("xbacklight -inc 5"),
         desc="Raise Brightness by 5%"),
+    # Screen capture
+    Key(["shift"], "Print",
+        lazy.spawn("flameshot gui"),
+        desc="Choose selection for screen capture"),
+    Key([], "Print",
+        lazy.spawn("flameshot full"),
+        desc="Capture full screen"),
 ]
 
 # Add key bindings to switch VTs in Wayland.
@@ -142,7 +149,7 @@ keys = [
 #     )
 
 # group_labels = ["", "", "3", "4", "5"]
-group_labels = [""]*5
+group_labels = ["", "", "", "", ""]
 groups = [Group(name=str(i), label=label) \
           for (i, label) in enumerate(group_labels, start=1)]
 
@@ -169,6 +176,15 @@ for i in groups:
             #     desc="move focused window to group {}".format(i.name)),
         ]
     )
+
+# Drop-down terminal
+keys.append(Key([mod], "b", lazy.group["scratchpad"].dropdown_toggle("term")))
+groups.append(
+    ScratchPad("scratchpad", [
+        DropDown("term", terminal,
+                 opacity=0.8, height=0.7, width=0.4, x=0.6),
+    ])
+)
 
 layouts = [
     layout.Columns(border_width=0),
@@ -200,15 +216,14 @@ screens = [
         bottom=bar.Bar(
             [
                 # widget.CurrentLayout(),
-                widget.TextBox("  󰖩 ", padding=0),
+                widget.TextBox("   ", padding=0),
                 widget.Wlan(interface="wlp7s0", format="{essid}    ", font="sans-serif", fontsize=12, padding=0),
                 widget.GroupBox(highlight_method="line",
-                                highlight_color=CURSOR,
+                                # highlight_color=CURSOR,
                                 # this_current_screen_border=CURSOR,
                                 # this_screen_border=CURSOR,
-                                block_highlight_text_color=FG_SELECT,
-                                borderwidth=0
-                                ),
+                                block_highlight_text_color=CURSOR,
+                                borderwidth=0),
                 # widget.GroupBox(),
                 widget.Prompt(),
                 customwindowtabs.WindowTabs(font="sans", fontsize=12),
@@ -225,12 +240,13 @@ screens = [
                 # widget.LaunchBar(),
                 # customcpu.CPU(format=" {load_percent:02d}%"),
                 widget.Spacer(),
-                widget.Clock(format=f"%d/%b  %H:%M", font="sans-serif", fontsize=12),
+                widget.Clock(format=f"%d/%b ⋅ %H:%M", font="sans-serif", fontsize=14),
                 widget.Spacer(),
                 widget.Volume(#emoji_list=["󰝟", "󰕿", "󰖀", "󰕾"], emoji=True,
-                              unmute_format="󰕾 {volume}%"),
-                widget.CPU(format=" {load_percent:02.0f}%"),
-                widget.Memory(format = " {MemPercent:02.0f}%"),
+                              unmute_format=" {volume}%",
+                              mute_format=" MUTE"),
+                widget.CPU(format=" {load_percent:02.0f}%"),
+                widget.Memory(format = " {MemPercent:02.0f}%"),
                 custombattery.Battery(format="{char} {percent:2.0%}"),
                 # widget.Battery(format=" {percent:2.0%} "),
                 # widget.Net(),
@@ -271,7 +287,8 @@ floating_layout = layout.Floating(
         Match(wm_class="ssh-askpass"),  # ssh-askpass
         Match(title="branchdialog"),  # gitk
         Match(title="pinentry"),  # GPG key password entry
-    ]
+    ],
+    border_width=0,
 )
 auto_fullscreen = True
 focus_on_window_activation = "smart"
